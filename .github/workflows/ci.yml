@@ -27,6 +27,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo fmt --check
       - run: cargo clippy --all
+      - run: cargo doc --no-deps
 
       # Setup everything for release builds
       - run: |
@@ -39,9 +40,12 @@ jobs:
           mv binaryen-version_114/bin/* ./bin
           mv wabt-1.0.33/bin/* ./bin
 
+      # Build
       - run: |
           PATH="$(pwd)/bin:$PATH" just export-release-web
           mkdir exports && mv ./export-release.html exports/index.html
+          mkdir exports/doc/ && cp -r ./target/wasm32-unknown-unknown/doc/* ./exports/doc/
+
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
