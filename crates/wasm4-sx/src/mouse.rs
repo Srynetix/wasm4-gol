@@ -4,9 +4,14 @@ use crate::wasm4::{MOUSE_BUTTONS, MOUSE_LEFT, MOUSE_MIDDLE, MOUSE_RIGHT, MOUSE_X
 
 static PREVIOUS_STATE: AtomicU8 = AtomicU8::new(0);
 
+/// Mouse button.
+#[derive(Clone, Copy)]
 pub enum MouseButton {
+    /// Left button.
     Left,
+    /// Right button.
     Right,
+    /// Middle button.
     Middle,
 }
 
@@ -31,7 +36,8 @@ impl From<MouseButton> for u8 {
     }
 }
 
-#[derive(Default, Debug)]
+/// Mouse state.
+#[derive(Default)]
 pub struct MouseState {
     x: i16,
     y: i16,
@@ -40,22 +46,27 @@ pub struct MouseState {
 }
 
 impl MouseState {
+    /// X coordinate.
     pub fn x(&self) -> i16 {
         self.x
     }
 
+    /// Y coordinate.
     pub fn y(&self) -> i16 {
         self.y
     }
 
+    /// Mouse position.
     pub fn position(&self) -> (i16, i16) {
         (self.x, self.y)
     }
 
+    /// Check if a button is pressed.
     pub fn is_button_pressed(&self, button: MouseButton) -> bool {
         self.pressed & u8::from(button) != 0
     }
 
+    /// Check if a button was just pressed.
     pub fn is_button_just_pressed(&self, button: MouseButton) -> bool {
         self.just_pressed & u8::from(button) != 0
     }

@@ -4,32 +4,44 @@ const CHARS_PER_LINE: usize = 20;
 const CHAR_WIDTH: usize = SCREEN_SIZE as usize / CHARS_PER_LINE;
 const CHAR_HEIGHT: usize = 8;
 
+/// Horizontal alignment.
+#[derive(Clone, Copy)]
 pub enum TextHorizontalAlignment {
+    /// Align left.
     Left,
+    /// Align center.
     Center,
+    /// Align right.
     Right,
 }
 
+/// Vertical alignment.
+#[derive(Clone, Copy)]
 pub enum TextVerticalAligment {
+    /// Align top.
     Top,
+    /// Align middle.
     Middle,
+    /// Align bottom.
     Bottom,
 }
 
 impl TextHorizontalAlignment {
-    pub fn get_padding_x<T: AsRef<[u8]>>(&self, text: T) -> i32 {
+    fn get_padding_x<T: AsRef<[u8]>>(&self, text: T) -> i32 {
         let len = text.as_ref().len() as i32;
 
         match *self {
             Self::Left => 0,
-            Self::Center => ((CHARS_PER_LINE as i32 - len) / 2) * CHAR_WIDTH as i32,
+            Self::Center => {
+                (((CHARS_PER_LINE as f32 - len as f32) / 2.0) * CHAR_WIDTH as f32) as i32
+            }
             Self::Right => (CHARS_PER_LINE as i32 - len) * CHAR_WIDTH as i32,
         }
     }
 }
 
 impl TextVerticalAligment {
-    pub fn get_padding_y(&self, line_count: usize, line_separation: i32) -> i32 {
+    fn get_padding_y(&self, line_count: usize, line_separation: i32) -> i32 {
         match *self {
             Self::Top => 0,
             Self::Middle => {
@@ -44,6 +56,31 @@ impl TextVerticalAligment {
     }
 }
 
+/// A text drawing helper.
+///
+/// # Example
+///
+/// ```no_run
+/// use wasm4_sx::*;
+///
+/// #[no_mangle]
+/// fn update() {
+///     Text::new("Top left")
+///         .with_horizontal_alignment(TextHorizontalAlignment::Left)
+///         .with_vertical_alignment(TextVerticalAligment::Top)
+///         .draw();
+///
+///     Text::new("Middle center")
+///         .with_horizontal_alignment(TextHorizontalAlignment::Center)
+///         .with_vertical_alignment(TextVerticalAligment::Middle)
+///         .draw();
+///
+///     Text::new("Bottom right")
+///         .with_horizontal_alignment(TextHorizontalAlignment::Right)
+///         .with_vertical_alignment(TextVerticalAligment::Bottom)
+///         .draw();
+/// }
+/// ```
 #[must_use]
 pub struct Text<T: AsRef<[u8]>> {
     value: T,
@@ -57,6 +94,7 @@ pub struct Text<T: AsRef<[u8]>> {
 }
 
 impl<T: AsRef<[u8]>> Text<T> {
+    /// Build a new text drawing helper.
     pub const fn new(value: T) -> Self {
         Self {
             value,
@@ -70,41 +108,49 @@ impl<T: AsRef<[u8]>> Text<T> {
         }
     }
 
+    /// Set the X coordinate.
     pub fn with_x(mut self, x: i32) -> Self {
         self.x = x;
         self
     }
 
+    /// Set the Y coordinate.
     pub fn with_y(mut self, y: i32) -> Self {
         self.y = y;
         self
     }
 
+    /// Set the X padding.
     pub fn with_padding_x(mut self, padding_x: i32) -> Self {
         self.padding_x = padding_x;
         self
     }
 
+    /// Set the Y padding.
     pub fn with_padding_y(mut self, padding_y: i32) -> Self {
         self.padding_y = padding_y;
         self
     }
 
+    /// Set the horizontal alignment.
     pub fn with_horizontal_alignment(mut self, alignment: TextHorizontalAlignment) -> Self {
         self.horizontal_alignment = Some(alignment);
         self
     }
 
+    /// Set the vertical alignment.
     pub fn with_vertical_alignment(mut self, alignment: TextVerticalAligment) -> Self {
         self.vertical_alignment = Some(alignment);
         self
     }
 
+    /// Set the line separation value.
     pub fn with_line_separation(mut self, line_separation: i32) -> Self {
         self.line_separation = line_separation;
         self
     }
 
+    /// Draw the text.
     pub fn draw(self) {
         let line_count = self.value.as_ref().split(|&v| v == b'\n').count();
         for (line_index, line) in self.value.as_ref().split(|&v| v == b'\n').enumerate() {

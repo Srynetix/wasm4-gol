@@ -3,9 +3,11 @@ use core::{
     ops::{Deref, DerefMut},
 };
 
+/// A "safe" global RefCell to use in the WASM-4 context
 pub struct W4RefCell<T>(RefCell<T>);
 
 impl<T> W4RefCell<T> {
+    /// Build a new RefCell.
     pub const fn new(value: T) -> Self {
         Self(RefCell::new(value))
     }

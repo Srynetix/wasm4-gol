@@ -1,10 +1,11 @@
 use crate::wasm4::PALETTE;
+use crate::Color;
 
-use super::Color;
-
+/// Color palette.
 pub struct Palette([Color; 4]);
 
 impl Palette {
+    /// Build a new color palette.
     pub fn new(colors: [Color; 4]) -> Self {
         Self(colors)
     }
@@ -22,20 +23,22 @@ impl From<[u32; 4]> for Palette {
     }
 }
 
-#[derive(Debug)]
-pub struct GlobalPalette {
+/// System palette.
+pub struct SystemPalette {
     _private: (),
 }
 
-impl GlobalPalette {
+impl SystemPalette {
     pub(crate) const fn new() -> Self {
         Self { _private: () }
     }
 
+    /// Get the system palette.
     pub fn get(&self) -> Palette {
         read_system_palette()
     }
 
+    /// Set the system palette.
     pub fn set(&self, palette: Palette) {
         write_system_palette(palette)
     }

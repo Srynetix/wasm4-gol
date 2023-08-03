@@ -23,12 +23,12 @@ build-release:
 # Build and run WASM (debug)
 run-debug-web:
 	@just build-debug
-	w4 run --no-open "{{CART_DEBUG_PATH}}"
+	w4 run --no-open --no-qr "{{CART_DEBUG_PATH}}"
 
 # Build the cartridge in release mode + strip and run WASM-4 on web
 run-release-web:
 	@just build-release
-	w4 run --no-open "{{CART_RELEASE_PATH}}"
+	w4 run --no-open --no-qr "{{CART_RELEASE_PATH}}"
 
 # Build the cartridge in release mode + strip and run WASM-4 on native mode
 run-release-native:
@@ -55,7 +55,7 @@ export-release-exe:
 
 # Build and run WASM-4 in watch mode (release, no-strip)
 watch:
-	w4 watch --no-open
+	w4 watch --no-qr --no-open
 
 # Analyze the debug cartridge
 analyze-wasm-debug:
