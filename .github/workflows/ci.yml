@@ -11,6 +11,9 @@ jobs:
     strategy:
       fail-fast: false
 
+    permissions:
+      contents: write
+
     name: CI
     runs-on: ubuntu-latest
 
