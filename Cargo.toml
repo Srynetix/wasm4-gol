@@ -1,0 +1,9 @@
+[workspace]
+members = [
+    "crates/wasm4-gol",
+    "crates/wasm4-sx",
+]
+
+[profile.release]
+opt-level = "z"
+lto = true
