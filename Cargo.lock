@@ -10,6 +10,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "const-str"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aca749d3d3f5b87a0d6100509879f9cf486ab510803a4a4e1001da1ff61c2bd6"
+
+[[package]]
 name = "fastrand"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -19,6 +25,7 @@ checksum = "6999dc1837253364c2ebb0704ba97994bd874e8f195d665c50b7548f6ea92764"
 name = "wasm4-sx"
 version = "0.1.0"
 dependencies = [
+ "const-str",
  "fastrand",
  "wasm4-sys",
 ]

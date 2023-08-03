@@ -1,11 +1,16 @@
+/// RGB color with u8 components.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
+    /// Red component.
+    pub r: u8,
+    /// Green component.
+    pub g: u8,
+    /// Blue component.
+    pub b: u8,
 }
 
 impl Color {
+    /// Build a new color.
     pub fn new(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b }
     }

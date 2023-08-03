@@ -8,27 +8,41 @@ use crate::{
 
 static PREVIOUS_STATE: W4RefCell<[u8; 4]> = W4RefCell::new([0; 4]);
 
+/// Gamepad index.
 #[repr(u8)]
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
 pub enum GamepadIndex {
+    /// First gamepad.
     I1,
+    /// Second gamepad.
     I2,
+    /// Third gamepad.
     I3,
+    /// Fourth gamepad.
     I4,
 }
 
 impl GamepadIndex {
+    /// Get all gamepad indices.
     pub fn all() -> [GamepadIndex; 4] {
         [Self::I1, Self::I2, Self::I3, Self::I4]
     }
 }
 
+/// Gamepad button.
+#[derive(Clone, Copy)]
 pub enum GamepadButton {
+    /// X button.
     X,
+    /// Z button.
     Z,
+    /// Left button.
     Left,
+    /// Right button.
     Right,
+    /// Up button.
     Up,
+    /// Down button.
     Down,
 }
 
@@ -59,17 +73,20 @@ impl From<GamepadButton> for u8 {
     }
 }
 
-#[derive(Default, Debug)]
+/// Gamepad state.
+#[derive(Default)]
 pub struct GamepadState {
     just_pressed: u8,
     pressed: u8,
 }
 
 impl GamepadState {
+    /// Check if a button is pressed.
     pub fn is_button_pressed(&self, button: GamepadButton) -> bool {
         self.pressed & u8::from(button) != 0
     }
 
+    /// Check if a button was just pressed.
     pub fn is_button_just_pressed(&self, button: GamepadButton) -> bool {
         self.just_pressed & u8::from(button) != 0
     }
