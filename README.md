@@ -6,6 +6,9 @@ A game written in Rust for the [WASM-4] fantasy console.
     <img src="./doc/animation.gif" alt="animation">
 </p>
 
+**:rocket: [Play it here!](https://srynetix.github.io/wasm4-gol/)**  
+**:book: [Read the engine documentation here!](https://srynetix.github.io/wasm4-gol/doc/wasm4_sx/)**
+
 ## Features
 
 - No memory allocation (and no-std)
