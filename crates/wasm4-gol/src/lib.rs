@@ -3,7 +3,7 @@
 
 mod logic;
 
-use logic::{draw_instructions, interact_grid, randomize_grid, render_grid, step_grid};
+use logic::{randomize_grid, run_game_frame};
 use wasm4_sx::*;
 
 #[no_mangle]
@@ -13,14 +13,5 @@ fn start() {
 
 #[no_mangle]
 fn update() {
-    Engine::run_frame(|ctx| {
-        interact_grid(&ctx);
-        step_grid();
-        render_grid();
-
-        // Hide after 10 seconds
-        if Engine::frame_count() < Engine::FPS * 10 {
-            draw_instructions();
-        }
-    });
+    Engine::run_frame(|ctx| run_game_frame(&ctx));
 }

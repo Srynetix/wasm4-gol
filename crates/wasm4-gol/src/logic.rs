@@ -1,16 +1,18 @@
 use core::sync::atomic::{AtomicBool, Ordering};
 
 use wasm4_sx::{
+    const_str::concat_bytes,
     fastrand,
-    wasm4::{rect, text, SCREEN_SIZE},
+    wasm4::{rect, SCREEN_SIZE},
     DrawColorsIndex, Engine, FrameContext, GamepadButton, GamepadIndex, MouseButton, PaletteColor,
-    W4RefCell,
+    Text, TextHorizontalAlignment, TextVerticalAligment, W4RefCell,
 };
 
 const CELL_SIZE: u32 = 2;
 const GRID_WIDTH: u32 = SCREEN_SIZE / CELL_SIZE;
 const GRID_HEIGHT: u32 = SCREEN_SIZE / CELL_SIZE;
 const GRID_CELL_COUNT: usize = (GRID_WIDTH * GRID_HEIGHT) as usize;
+const DRAW_INSTRUCTIONS_FOR_SECONDS: u64 = 10;
 
 static GRID_BUFFER_FRONT: W4RefCell<[GameCell; GRID_CELL_COUNT]> =
     W4RefCell::new([GameCell::new(); GRID_CELL_COUNT]);
@@ -63,6 +65,17 @@ pub fn randomize_grid(alive_probability: f64) {
     swap_buffers();
 }
 
+pub fn run_game_frame(ctx: &FrameContext) {
+    interact_grid(ctx);
+    step_grid();
+    render_grid();
+
+    // Hide after 10 seconds
+    if Engine::frame_count() < Engine::FPS * DRAW_INSTRUCTIONS_FOR_SECONDS {
+        draw_instructions();
+    }
+}
+
 fn swap_buffers() {
     GRID_BUFFER_FRONT
         .borrow_mut()
@@ -73,7 +86,7 @@ fn swap_buffers() {
         });
 }
 
-pub fn interact_grid(ctx: &FrameContext) {
+fn interact_grid(ctx: &FrameContext) {
     let (mouse_x, mouse_y) = ctx.mouse().position();
     let cell_x = (mouse_x.max(0) as u32 / CELL_SIZE).min(GRID_WIDTH - 1);
     let cell_y = (mouse_y.max(0) as u32 / CELL_SIZE).min(GRID_HEIGHT - 1);
@@ -106,7 +119,7 @@ fn set_cell_state(x: u32, y: u32, state: CellState) {
     GRID_BUFFER_FRONT.borrow_mut()[idx].state = state;
 }
 
-pub fn step_grid() {
+fn step_grid() {
     if !get_simulation_running_state() {
         return;
     }
@@ -125,7 +138,7 @@ pub fn step_grid() {
     swap_buffers()
 }
 
-pub fn render_grid() {
+fn render_grid() {
     for (idx, cell) in GRID_BUFFER_FRONT.borrow().iter().enumerate() {
         let (x, y) = index_to_xy(idx);
 
@@ -193,40 +206,41 @@ fn index_to_xy(index: usize) -> (u32, u32) {
     ((index as u32) % GRID_WIDTH, (index as u32) / GRID_WIDTH)
 }
 
-pub fn set_simulation_running_state(value: bool) {
+fn set_simulation_running_state(value: bool) {
     SIMULATION_RUNNING.store(value, Ordering::Relaxed)
 }
 
-pub fn get_simulation_running_state() -> bool {
+fn get_simulation_running_state() -> bool {
     SIMULATION_RUNNING.load(Ordering::Relaxed)
 }
 
-pub fn draw_instructions() {
+fn draw_instructions() {
     Engine::draw_colors().set_index(DrawColorsIndex::I1, PaletteColor::P2);
     Engine::draw_colors().set_index(DrawColorsIndex::I2, PaletteColor::P4);
 
-    let padding = 2;
+    Text::new("Game of Life\nby @Srynetix")
+        .with_horizontal_alignment(TextHorizontalAlignment::Center)
+        .with_vertical_alignment(TextVerticalAligment::Top)
+        .with_line_separation(2)
+        .with_padding_y(2)
+        .draw();
 
-    text_centered("Game of life", padding);
-    text_centered("by @Srynetix", padding * 2 + 8);
+    Text::new("Have fun!")
+        .with_horizontal_alignment(TextHorizontalAlignment::Center)
+        .with_vertical_alignment(TextVerticalAligment::Middle)
+        .draw();
 
-    text_centered(
-        b"\x80 to pause/resume",
-        SCREEN_SIZE as i32 - 32 - padding * 4,
-    );
-    text_centered(b"\x81 to clear grid", SCREEN_SIZE as i32 - 24 - padding * 3);
-    text_centered(b"Left-click to draw", SCREEN_SIZE as i32 - 16 - padding * 2);
-    text_centered(b"Right-click to erase", SCREEN_SIZE as i32 - 8 - padding);
+    Text::new(concat_bytes!(
+        b"\x80 to pause/resume\n",
+        b"\x81 to clear grid\n",
+        b"Left-click to draw\n",
+        b"Right-click to erase"
+    ))
+    .with_horizontal_alignment(TextHorizontalAlignment::Center)
+    .with_vertical_alignment(TextVerticalAligment::Bottom)
+    .with_line_separation(2)
+    .with_padding_y(-2)
+    .draw();
 
     Engine::draw_colors().set_index(DrawColorsIndex::I2, PaletteColor::Transparent);
-}
-
-pub fn text_centered<T: AsRef<[u8]>>(s: T, y: i32) {
-    // 20 chars max per line
-    const CHARS_PER_LINE: usize = 20;
-    const CHAR_WIDTH: usize = SCREEN_SIZE as usize / CHARS_PER_LINE;
-
-    let len = s.as_ref().len() as i32;
-    let padding_count = (CHARS_PER_LINE as i32 - len) / 2;
-    text(s, padding_count * CHAR_WIDTH as i32, y);
 }
