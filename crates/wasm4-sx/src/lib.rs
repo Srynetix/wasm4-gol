@@ -45,13 +45,18 @@
 
 mod cell;
 mod color;
+mod debug;
 mod draw_colors;
 mod engine;
 mod gamepad;
 mod mouse;
+mod music;
 mod palette;
+mod panic;
+mod rand;
 mod screen;
 mod text;
+mod tone;
 mod vec2;
 
 pub use cell::W4RefCell;
@@ -60,11 +65,15 @@ pub use draw_colors::{DrawColors, DrawColorsBuilder, DrawColorsIndex, PaletteCol
 pub use engine::{Engine, FrameContext};
 pub use gamepad::{GamepadButton, GamepadIndex, GamepadState};
 pub use mouse::{MouseButton, MouseState};
-pub use palette::Palette;
+pub use music::TrackReader;
+pub use palette::{Palette, PaletteIndex};
+pub use rand::{rand_f64, rand_reseed, rand_u8};
 pub use text::{Text, TextHorizontalAlignment, TextVerticalAligment};
+pub use tone::*;
 pub use vec2::Vec2;
 
 // Reexports
+pub use arrayvec;
+pub use byteorder;
 pub use const_str;
-pub use fastrand;
 pub use wasm4_sys as wasm4;

@@ -1,6 +1,20 @@
 use crate::wasm4::PALETTE;
 use crate::Color;
 
+/// Palette index.
+#[repr(u8)]
+#[derive(Clone, Copy)]
+pub enum PaletteIndex {
+    /// First palette index.
+    P1 = 0,
+    /// Second palette index.
+    P2,
+    /// Third palette index.
+    P3,
+    /// Fourth palette index.
+    P4,
+}
+
 /// Color palette.
 pub struct Palette([Color; 4]);
 
@@ -8,6 +22,11 @@ impl Palette {
     /// Build a new color palette.
     pub fn new(colors: [Color; 4]) -> Self {
         Self(colors)
+    }
+
+    /// Set a specific palette color.
+    pub fn set_color(&mut self, index: PaletteIndex, value: Color) {
+        self.0[index as usize] = value;
     }
 }
 

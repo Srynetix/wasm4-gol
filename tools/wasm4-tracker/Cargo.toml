@@ -1,0 +1,11 @@
+[package]
+name = "wasm4-tracker"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+wasm4-sx = { path = "../../crates/wasm4-sx" }
+wasm4-stubs = { path = "../../crates/wasm4-stubs" }
+byteorder = "1.4.3"

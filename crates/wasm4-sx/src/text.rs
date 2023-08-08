@@ -1,7 +1,7 @@
 use wasm4_sys::{text, SCREEN_SIZE};
 
 const CHARS_PER_LINE: usize = 20;
-const CHAR_WIDTH: usize = SCREEN_SIZE as usize / CHARS_PER_LINE;
+const CHAR_WIDTH: usize = 8;
 const CHAR_HEIGHT: usize = 8;
 
 /// Horizontal alignment.
@@ -172,12 +172,129 @@ impl<T: AsRef<[u8]>> Text<T> {
         }
     }
 
-    fn draw_line<U: AsRef<[u8]>>(&self, line_index: usize, line_count: usize, line: U) {
+    fn compute_draw_coordinates<U: AsRef<[u8]>>(
+        &self,
+        line_index: usize,
+        line_count: usize,
+        line: U,
+    ) -> (i32, i32) {
         let x = self.horizontal_padding(line.as_ref()) + self.x;
         let y = self.vertical_padding(line_count)
             + self.y
             + (CHAR_WIDTH as i32 + self.line_separation) * line_index as i32;
 
+        (x, y)
+    }
+
+    fn draw_line<U: AsRef<[u8]>>(&self, line_index: usize, line_count: usize, line: U) {
+        let (x, y) = self.compute_draw_coordinates(line_index, line_count, line.as_ref());
         text(line.as_ref(), x, y);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn horizontal_aligment() {
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Left)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        assert_eq!((x, y), (0, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Center)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 5 * 8) / 2 = 60
+        assert_eq!((x, y), (60, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Center)
+            .with_padding_x(1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 5 * 8) / 2 + 1 = 61
+        assert_eq!((x, y), (61, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Center)
+            .with_padding_x(-1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 5 * 8) / 2 - 1 = 59
+        assert_eq!((x, y), (59, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Right)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 5 * 8) = 120
+        assert_eq!((x, y), (120, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_horizontal_alignment(TextHorizontalAlignment::Right)
+            .with_padding_x(1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 5 * 8) + 1 = 121
+        assert_eq!((x, y), (121, 0));
+    }
+
+    #[test]
+    fn vertical_alignment() {
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Top)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        assert_eq!((x, y), (0, 0));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Middle)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 8) / 2 = 76
+        assert_eq!((x, y), (0, 76));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Middle)
+            .with_padding_y(1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 8) / 2 + 1 = 77
+        assert_eq!((x, y), (0, 77));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Middle)
+            .with_padding_y(-1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // (160 - 8) / 2 - 1 = 75
+        assert_eq!((x, y), (0, 75));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Bottom)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // 160 - 8 = 152
+        assert_eq!((x, y), (0, 152));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Bottom)
+            .with_padding_y(1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // 160 - 8 + 1 = 153
+        assert_eq!((x, y), (0, 153));
+
+        let (x, y) = Text::new("Hello")
+            .with_vertical_alignment(TextVerticalAligment::Bottom)
+            .with_padding_y(-1)
+            .compute_draw_coordinates(0, 1, "Hello");
+
+        // 160 - 8 - 1 = 151
+        assert_eq!((x, y), (0, 151));
     }
 }

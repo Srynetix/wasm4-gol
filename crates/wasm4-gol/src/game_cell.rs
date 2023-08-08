@@ -1,4 +1,4 @@
-use wasm4_sx::fastrand;
+use wasm4_sx::rand_f64;
 
 /// Cell state.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -36,7 +36,7 @@ impl GameCell {
     /// Randomize the cell state using a probability value (between 0 and 1).
     pub fn randomize(&mut self, alive_probability: f64) {
         self.age = 0;
-        self.state = if fastrand::f64() < alive_probability {
+        self.state = if rand_f64() < alive_probability {
             CellState::Alive
         } else {
             CellState::Dead

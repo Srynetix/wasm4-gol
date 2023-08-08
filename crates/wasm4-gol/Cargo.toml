@@ -9,3 +9,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 wasm4-sx = { path = "../wasm4-sx" }
+
+[dev-dependencies]
+wasm4-stubs = { path = "../wasm4-stubs" }

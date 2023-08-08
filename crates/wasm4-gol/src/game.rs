@@ -1,10 +1,11 @@
 use core::sync::atomic::{AtomicBool, Ordering};
-
 use wasm4_sx::{
     const_str::concat_bytes,
+    rand_u8,
     wasm4::{rect, SCREEN_SIZE},
-    DrawColorsIndex, Engine, FrameContext, GamepadButton, GamepadIndex, MouseButton, PaletteColor,
-    Text, TextHorizontalAlignment, TextVerticalAligment, W4RefCell,
+    Color, DrawColorsIndex, Engine, FrameContext, GamepadButton, GamepadIndex, MouseButton,
+    PaletteColor, PaletteIndex, Text, TextHorizontalAlignment, TextVerticalAligment, TrackReader,
+    W4RefCell,
 };
 
 use crate::game_cell::{CellState, GameCell};
@@ -20,6 +21,9 @@ static GRID_BUFFER_FRONT: W4RefCell<[GameCell; GRID_CELL_COUNT]> =
 static GRID_BUFFER_BACK: W4RefCell<[GameCell; GRID_CELL_COUNT]> =
     W4RefCell::new([GameCell::new(); GRID_CELL_COUNT]);
 static SIMULATION_RUNNING: AtomicBool = AtomicBool::new(true);
+
+const NOTES_STREAM: &[u8] = include_bytes!("../assets/song.bin");
+static TRACK: W4RefCell<TrackReader> = W4RefCell::new(TrackReader::new(NOTES_STREAM));
 
 /// Wrapper around the game.
 pub struct Game;
@@ -41,10 +45,18 @@ impl Game {
         Self::step_grid();
         Self::render_grid();
 
+        let frame_count = Engine::frame_count();
+
         // Hide after 10 seconds
-        if Engine::frame_count() < Engine::FPS * DRAW_INSTRUCTIONS_FOR_SECONDS {
+        if frame_count < Engine::FPS * DRAW_INSTRUCTIONS_FOR_SECONDS {
             Self::draw_instructions();
         }
+
+        if frame_count > 0 && frame_count % (Engine::FPS * 4) == 0 {
+            Self::randomize_cell_color()
+        }
+
+        Self::play_music();
     }
 
     fn swap_buffers() {
@@ -59,13 +71,15 @@ impl Game {
 
     fn interact_grid(ctx: &FrameContext) {
         let (mouse_x, mouse_y) = ctx.mouse().position();
-        let cell_x = (mouse_x.max(0) as u32 / CELL_SIZE).min(GRID_WIDTH - 1);
-        let cell_y = (mouse_y.max(0) as u32 / CELL_SIZE).min(GRID_HEIGHT - 1);
+        let cell_x = mouse_x.max(0) as u32 / CELL_SIZE;
+        let cell_y = mouse_y.max(0) as u32 / CELL_SIZE;
 
-        if ctx.mouse().is_button_pressed(MouseButton::Left) {
-            Self::set_cell_state(cell_x, cell_y, CellState::Alive);
-        } else if ctx.mouse().is_button_pressed(MouseButton::Right) {
-            Self::set_cell_state(cell_x, cell_y, CellState::Dead);
+        if cell_x < GRID_WIDTH && cell_y < GRID_HEIGHT {
+            if ctx.mouse().is_button_pressed(MouseButton::Left) {
+                Self::set_cell_state(cell_x, cell_y, CellState::Alive);
+            } else if ctx.mouse().is_button_pressed(MouseButton::Right) {
+                Self::set_cell_state(cell_x, cell_y, CellState::Dead);
+            }
         }
 
         if ctx
@@ -81,6 +95,11 @@ impl Game {
         {
             Self::clear_grid();
         }
+    }
+
+    fn play_music() {
+        let frame_count = Engine::frame_count();
+        TRACK.borrow_mut().play_tick(frame_count as usize);
     }
 
     fn set_cell_state(x: u32, y: u32, state: CellState) {
@@ -183,6 +202,15 @@ impl Game {
 
     fn get_simulation_running_state() -> bool {
         SIMULATION_RUNNING.load(Ordering::Relaxed)
+    }
+
+    fn randomize_cell_color() {
+        let mut original_palette = Engine::palette().get();
+        original_palette.set_color(
+            PaletteIndex::P1,
+            Color::new(rand_u8(0..=255), rand_u8(0..=255), rand_u8(0..=255)),
+        );
+        Engine::palette().set(original_palette);
     }
 
     fn draw_instructions() {

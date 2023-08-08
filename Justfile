@@ -12,11 +12,19 @@ _default:
 
 # Build the cartridge in debug mode
 build-debug:
-	cargo build
+	cargo build --target wasm32-unknown-unknown
 
 # Build the cartridge in release mode + strip
 build-release:
-	cargo build --release
+	cargo build --release --target wasm32-unknown-unknown
+	@just strip-release
+
+# Build the cartridge in release mode with no strip
+build-release-nostrip:
+	cargo build --release --target wasm32-unknown-unknown
+
+# Strip release cartridge
+strip-release:
 	wasm-strip "{{CART_RELEASE_PATH}}"
 	wasm-opt -Oz "{{CART_RELEASE_PATH}}" -o "{{CART_RELEASE_PATH}}"
 
@@ -29,6 +37,11 @@ run-debug-web:
 run-release-web:
 	@just build-release
 	w4 run --no-open --no-qr "{{CART_RELEASE_PATH}}"
+
+# Build the cartridge in debug mode and run WASM-4 on native mode
+run-debug-native:
+	@just build-debug
+	w4 run-native "{{CART_DEBUG_PATH}}"
 
 # Build the cartridge in release mode + strip and run WASM-4 on native mode
 run-release-native:
@@ -55,7 +68,7 @@ export-release-exe:
 
 # Build and run WASM-4 in watch mode (release, no-strip)
 watch:
-	w4 watch --no-qr --no-open
+	CARGO_BUILD_TARGET=wasm32-unknown-unknown w4 watch --no-qr --no-open
 
 # Analyze the debug cartridge
 analyze-wasm-debug:
@@ -67,8 +80,17 @@ analyze-wasm-release:
 
 # Format the code
 fmt:
-	cargo fmt
+	cargo fmt --all
 
 # Run clippy on the code
 lint:
-	cargo clippy
+	cargo clippy --all --target wasm32-unknown-unknown
+
+# Run tests
+test:
+	cargo test
+
+# Build track
+build-track:
+	cd ./tools/wasm4-tracker && cargo run
+	mv ./tools/wasm4-tracker/song.bin ./crates/wasm4-gol/assets/song.bin
