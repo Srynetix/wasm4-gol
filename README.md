@@ -14,6 +14,7 @@ A game written in Rust for the [WASM-4] fantasy console.
 - No memory allocation (and no-std)
 - Configurable grid size using const values (just change the `CELL_SIZE` value in the [crates/wasm4-gol/src/logic.rs](./crates/wasm4-gol/src/logic.rs) file)
 - Uses a simple ad-hoc WASM-4 wrapper called [wasm4-sx]
+- Uses a custom made "tracker" to generate the soundtrack: [wasm4-tracker]
 
 ## Dependencies
 
@@ -54,3 +55,4 @@ just export-release-exe
 [Just]: https://github.com/casey/just
 [twiggy]: https://github.com/rustwasm/twiggy
 [wasm4-sx]: ./crates/wasm4-sx/README.md
+[wasm4-tracker]: ./crates/wasm4-tracker/README.md
