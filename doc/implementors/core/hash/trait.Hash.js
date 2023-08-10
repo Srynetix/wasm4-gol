@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"wasm4_sx":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.71.1/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"wasm4_sx/struct.Color.html\" title=\"struct wasm4_sx::Color\">Color</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.71.1/core/hash/trait.Hash.html\" title=\"trait core::hash::Hash\">Hash</a> for <a class=\"struct\" href=\"wasm4_sx/struct.DrawColors.html\" title=\"struct wasm4_sx::DrawColors\">DrawColors</a>"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

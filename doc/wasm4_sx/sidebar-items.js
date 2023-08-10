@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["DrawColorsIndex","GamepadButton","GamepadIndex","MouseButton","PaletteColor","TextHorizontalAlignment","TextVerticalAligment"],"struct":["Color","DrawColors","DrawColorsBuilder","Engine","FrameContext","GamepadState","MouseState","Palette","Text","Vec2","W4RefCell"]};

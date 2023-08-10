@@ -1,3 +1,0 @@
-(function() {var implementors = {
-"wasm4_sx":[["impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.71.1/core/ops/deref/trait.DerefMut.html\" title=\"trait core::ops::deref::DerefMut\">DerefMut</a> for <a class=\"struct\" href=\"wasm4_sx/struct.W4RefCell.html\" title=\"struct wasm4_sx::W4RefCell\">W4RefCell</a>&lt;T&gt;"]]
-};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
