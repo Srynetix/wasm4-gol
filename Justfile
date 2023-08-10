@@ -97,7 +97,7 @@ ci:
 	@just fmt "--check"
 	@just lint "-- -D warnings"
 	@just test
-	@just build-release
+	@just build-release-nostrip
 
 # Build documentation
 doc:
