@@ -8,10 +8,10 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-wasm4-sx = { path = "../wasm4-sx" }
+wasm4-sx = { git = "https://github.com/Srynetix/wasm4-sx.git" }
 
 [dev-dependencies]
-wasm4-stubs = { path = "../wasm4-stubs" }
+wasm4-stubs = { git = "https://github.com/Srynetix/wasm4-sx.git" }
 
 [profile.release]
 opt-level = "z"

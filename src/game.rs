@@ -52,7 +52,7 @@ impl Game {
             Self::draw_instructions();
         }
 
-        if frame_count > 0 && frame_count % (Engine::FPS * 4) == 0 {
+        if frame_count > 0 && frame_count % 480 == 0 {
             Self::randomize_cell_color()
         }
 
@@ -150,7 +150,6 @@ impl Game {
     fn clear_grid() {
         GRID_BUFFER_BACK.borrow_mut().iter_mut().for_each(|c| {
             c.state = CellState::Dead;
-            c.age = 0;
         });
 
         Self::swap_buffers();

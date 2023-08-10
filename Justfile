@@ -1,11 +1,10 @@
 CART_TITLE := "Game of Life"
 CART_DESCRIPTION := "Simple Game of Life"
 
-CART_PROJECT_DIR := "./wasm4-gol"
-CART_CARGO_PATH := CART_PROJECT_DIR / "Cargo.toml"
 CART_FILE := "cart.wasm"
-CART_DEBUG_PATH := CART_PROJECT_DIR / "target/wasm32-unknown-unknown/debug" / CART_FILE
-CART_RELEASE_PATH := CART_PROJECT_DIR / "target/wasm32-unknown-unknown/release" / CART_FILE
+CART_DEBUG_PATH := "./target/wasm32-unknown-unknown/debug" / CART_FILE
+CART_RELEASE_PATH := "./target/wasm32-unknown-unknown/release" / CART_FILE
+
 WEB_EXPORT_RELEASE_PATH := "./export-release.html"
 NATIVE_EXE_EXPORT_RELEASE_PATH := "./export-release.exe"
 
@@ -14,7 +13,7 @@ _default:
 
 # Build the cartridge in debug mode
 build-debug:
-	cargo build --manifest-path "{{CART_CARGO_PATH}}" --target wasm32-unknown-unknown
+	cargo build --target wasm32-unknown-unknown
 
 # Build the cartridge in release mode + strip
 build-release:
@@ -23,7 +22,7 @@ build-release:
 
 # Build the cartridge in release mode with no strip
 build-release-nostrip:
-	cargo build --manifest-path "{{CART_CARGO_PATH}}" --release --target wasm32-unknown-unknown
+	cargo build --release --target wasm32-unknown-unknown
 
 # Strip release cartridge
 strip-release:
@@ -70,7 +69,7 @@ export-release-exe:
 
 # Build and run WASM-4 in watch mode (release, no-strip)
 watch:
-	cd "{{CART_PROJECT_DIR}}" && CARGO_BUILD_TARGET=wasm32-unknown-unknown w4 watch --no-qr --no-open
+	CARGO_BUILD_TARGET=wasm32-unknown-unknown w4 watch --no-qr --no-open
 
 # Analyze the debug cartridge
 analyze-wasm-debug:
@@ -82,31 +81,16 @@ analyze-wasm-release:
 
 # Format the code
 fmt *ARGS:
-	cargo fmt --manifest-path "{{CART_CARGO_PATH}}" {{ARGS}}
-	cargo fmt --manifest-path "./wasm4-stubs/Cargo.toml" {{ARGS}}
-	cargo fmt --manifest-path "./wasm4-sx/Cargo.toml" {{ARGS}}
-	cargo fmt --manifest-path "./wasm4-sys/Cargo.toml" {{ARGS}}
-	cargo fmt --manifest-path "./wasm4-tracker/Cargo.toml" {{ARGS}}
+	cargo fmt {{ARGS}}
 
 # Run clippy on the code
 lint *ARGS:
-	cargo clippy --manifest-path "{{CART_CARGO_PATH}}" --target wasm32-unknown-unknown {{ARGS}}
-	cargo clippy --manifest-path "{{CART_CARGO_PATH}}" --tests {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-stubs/Cargo.toml" --target wasm32-unknown-unknown {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-stubs/Cargo.toml" --tests {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-sx/Cargo.toml" --target wasm32-unknown-unknown {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-sx/Cargo.toml" --tests {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-sys/Cargo.toml" --target wasm32-unknown-unknown {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-sys/Cargo.toml" --tests {{ARGS}}
-	cargo clippy --manifest-path "./wasm4-tracker/Cargo.toml" --tests {{ARGS}}
+	cargo clippy --target wasm32-unknown-unknown {{ARGS}}
+	cargo clippy --tests {{ARGS}}
 
 # Run tests
 test:
-	cargo test --manifest-path "{{CART_CARGO_PATH}}"
-	cargo test --manifest-path "./wasm4-stubs/Cargo.toml"
-	cargo test --manifest-path "./wasm4-sx/Cargo.toml"
-	cargo test --manifest-path "./wasm4-sys/Cargo.toml"
-	cargo test --manifest-path "./wasm4-tracker/Cargo.toml"
+	cargo test
 
 # Run CI steps
 ci:
@@ -117,16 +101,14 @@ ci:
 
 # Build documentation
 doc:
-	cargo doc --manifest-path "{{CART_CARGO_PATH}}"
+	cargo doc
 
 # Clean target folders
 clean:
-	cargo clean --manifest-path "{{CART_CARGO_PATH}}"
-	cargo clean --manifest-path "./wasm4-stubs/Cargo.toml"
-	cargo clean --manifest-path "./wasm4-sx/Cargo.toml"
-	cargo clean --manifest-path "./wasm4-sys/Cargo.toml"
-	cargo clean --manifest-path "./wasm4-tracker/Cargo.toml"
+	cargo clean
 
 # Build track
 build-track:
-	cargo run --manifest-path ./wasm4-tracker/Cargo.toml -- --output "{{CART_PROJECT_DIR}}/assets/song.bin"
+	wasm4-tracker \
+		--input "./assets/song.yml" \
+		--output "./assets/song.bin"

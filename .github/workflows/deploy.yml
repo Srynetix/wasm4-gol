@@ -21,7 +21,6 @@ jobs:
       - run: rustup toolchain install stable --profile minimal --target wasm32-unknown-unknown
       - uses: extractions/setup-just@v1
       - uses: Swatinem/rust-cache@v2
-      - run: cargo doc --no-deps
 
       # Setup everything for release builds
       - run: |
@@ -38,7 +37,6 @@ jobs:
       - run: |
           PATH="$(pwd)/bin:$PATH" just export-release-web
           mkdir exports && mv ./export-release.html exports/index.html
-          mkdir exports/doc/ && cp -r ./target/wasm32-unknown-unknown/doc/* ./exports/doc/
 
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.3

@@ -12,7 +12,6 @@ use wasm4_sx::*;
 
 #[cfg(test)]
 extern crate wasm4_stubs;
-// pub use wasm4_stubs::*;
 
 #[no_mangle]
 fn start() {

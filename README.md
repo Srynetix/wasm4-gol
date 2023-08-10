@@ -7,7 +7,7 @@ A game written in Rust for the [WASM-4] fantasy console.
 </p>
 
 **:rocket: [Play it here!](https://srynetix.github.io/wasm4-gol/)**  
-**:book: [Read the engine documentation here!](https://srynetix.github.io/wasm4-gol/doc/wasm4_sx/)**
+**:book: [Read the engine documentation here!](https://srynetix.github.io/wasm4-sx/wasm4_sx/)**
 
 ## Features
 
@@ -21,6 +21,8 @@ A game written in Rust for the [WASM-4] fantasy console.
 - The [WASM-4] CLI (`w4`)
 - A stable [Rust] compiler with the `wasm32-unknown-unknown` target
 - The [Just] command runner
+- [wasm4-tracker] to build the music track from the YAML file
+    - `cargo install --git https://github.com/Srynetix/wasm4-tracker`
 
 For release builds:
 - The `wasm-opt` tool from the [binaryen] project
@@ -54,5 +56,6 @@ just export-release-exe
 [wabt]: https://github.com/WebAssembly/wabt
 [Just]: https://github.com/casey/just
 [twiggy]: https://github.com/rustwasm/twiggy
-[wasm4-sx]: ./crates/wasm4-sx/README.md
-[wasm4-tracker]: ./crates/wasm4-tracker/README.md
+
+[wasm4-sx]: https://github.com/Srynetix/wasm4-sx
+[wasm4-tracker]: https://github.com/Srynetix/wasm4-tracker
