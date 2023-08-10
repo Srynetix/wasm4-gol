@@ -1,8 +1,17 @@
-[workspace]
-members = [
-    "crates/wasm4-gol",
-    "crates/wasm4-sx",
-]
+[package]
+name = "cart"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm4-sx = { git = "https://github.com/Srynetix/wasm4-sx.git" }
+
+[dev-dependencies]
+wasm4-stubs = { git = "https://github.com/Srynetix/wasm4-sx.git" }
 
 [profile.release]
 opt-level = "z"

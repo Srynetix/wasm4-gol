@@ -1,9 +1,0 @@
-[package]
-name = "wasm4-sx"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-fastrand = "2.0.0"
-wasm4-sys = { path = "../wasm4-sys" }
-const-str = "0.5.6"

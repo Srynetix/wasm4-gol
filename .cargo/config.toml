@@ -1,6 +1,3 @@
-[build]
-target = "wasm32-unknown-unknown"
-
 [target.wasm32-unknown-unknown]
 rustflags = [
     # Import memory from WASM-4

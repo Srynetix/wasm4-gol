@@ -4,6 +4,7 @@ CART_DESCRIPTION := "Simple Game of Life"
 CART_FILE := "cart.wasm"
 CART_DEBUG_PATH := "./target/wasm32-unknown-unknown/debug" / CART_FILE
 CART_RELEASE_PATH := "./target/wasm32-unknown-unknown/release" / CART_FILE
+
 WEB_EXPORT_RELEASE_PATH := "./export-release.html"
 NATIVE_EXE_EXPORT_RELEASE_PATH := "./export-release.exe"
 
@@ -12,11 +13,19 @@ _default:
 
 # Build the cartridge in debug mode
 build-debug:
-	cargo build
+	cargo build --target wasm32-unknown-unknown
 
 # Build the cartridge in release mode + strip
 build-release:
-	cargo build --release
+	@just build-release-nostrip
+	@just strip-release
+
+# Build the cartridge in release mode with no strip
+build-release-nostrip:
+	cargo build --release --target wasm32-unknown-unknown
+
+# Strip release cartridge
+strip-release:
 	wasm-strip "{{CART_RELEASE_PATH}}"
 	wasm-opt -Oz "{{CART_RELEASE_PATH}}" -o "{{CART_RELEASE_PATH}}"
 
@@ -29,6 +38,11 @@ run-debug-web:
 run-release-web:
 	@just build-release
 	w4 run --no-open --no-qr "{{CART_RELEASE_PATH}}"
+
+# Build the cartridge in debug mode and run WASM-4 on native mode
+run-debug-native:
+	@just build-debug
+	w4 run-native "{{CART_DEBUG_PATH}}"
 
 # Build the cartridge in release mode + strip and run WASM-4 on native mode
 run-release-native:
@@ -55,7 +69,7 @@ export-release-exe:
 
 # Build and run WASM-4 in watch mode (release, no-strip)
 watch:
-	w4 watch --no-qr --no-open
+	CARGO_BUILD_TARGET=wasm32-unknown-unknown w4 watch --no-qr --no-open
 
 # Analyze the debug cartridge
 analyze-wasm-debug:
@@ -66,9 +80,35 @@ analyze-wasm-release:
 	twiggy top "{{CART_RELEASE_PATH}}"
 
 # Format the code
-fmt:
-	cargo fmt
+fmt *ARGS:
+	cargo fmt {{ARGS}}
 
 # Run clippy on the code
-lint:
-	cargo clippy
+lint *ARGS:
+	cargo clippy --target wasm32-unknown-unknown {{ARGS}}
+	cargo clippy --tests {{ARGS}}
+
+# Run tests
+test:
+	cargo test
+
+# Run CI steps
+ci:
+	@just fmt "--check"
+	@just lint "-- -D warnings"
+	@just test
+	@just build-release-nostrip
+
+# Build documentation
+doc:
+	cargo doc
+
+# Clean target folders
+clean:
+	cargo clean
+
+# Build track
+build-track:
+	wasm4-tracker \
+		--input "./assets/song.yml" \
+		--output "./assets/song.bin"
