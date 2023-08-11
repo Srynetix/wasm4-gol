@@ -12,7 +12,7 @@ A game written in Rust for the [WASM-4] fantasy console.
 ## Features
 
 - No memory allocation (and no-std)
-- Configurable grid size using const values (just change the `CELL_SIZE` value in the [crates/wasm4-gol/src/logic.rs](./crates/wasm4-gol/src/logic.rs) file)
+- Configurable grid size using const values (just change the `CELL_SIZE` value in the [./src/logic.rs](./src/logic.rs) file)
 - Uses a simple ad-hoc WASM-4 wrapper called [wasm4-sx]
 - Uses a custom made "tracker" to generate the soundtrack: [wasm4-tracker]
 
